@@ -3,6 +3,7 @@ services:
     build: .docker/rabbitmq
     container_name: comm-infra-rabbitmq
     ports:
+      - 1883:1883
       - 5672:5672
       - 15672:15672
     volumes:
