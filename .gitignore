@@ -605,3 +605,11 @@ dist
 # .pnp.*
 
 # End of https://www.toptal.com/developers/gitignore/api/git,visualstudiocode,jetbrains,node,yarn,dotnetcore,aspnetcore,go
+
+.docker/rabbitmq/**/*
+!.docker/rabbitmq/.gitkeep
+!.docker/rabbitmq/etc
+
+.docker/rabbitmq/etc/**/*
+!.docker/rabbitmq/etc/rabbitmq.conf
+!.docker/rabbitmq/etc/enabled_plugins

@@ -1,0 +1,11 @@
+services:
+  rabbitmq:
+    build: .docker/rabbitmq
+    container_name: comm-infra-rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - .docker/rabbitmq/etc:/etc/rabbitmq
+      - .docker/rabbitmq/data:/var/lib/rabbitmq
+      - .docker/rabbitmq/logs:/var/logs/rabbitmq
