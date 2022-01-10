@@ -30,12 +30,14 @@ services:
       - zookeeper
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       KAFKA_LISTENERS: INTERNAL://:9092,OUTSIDE://:9094
       KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:9092,OUTSIDE://host.docker.internal:9094
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,OUTSIDE:PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
     extra_hosts:
       - "host.docker.internal:172.17.0.1"
     ports:
@@ -43,22 +45,6 @@ services:
       - 9094:9094
     volumes:
       - .docker/kafka/data:/var/lib/kafka/data
-
-  control-center:
-    image: confluentinc/cp-enterprise-control-center:6.0.1
-    container_name: comm-infra-control-center
-    depends_on:
-      - kafka
-      - kafka-connect
-    environment:
-      CONTROL_CENTER_BOOTSTRAP_SERVERS: "kafka:9092"
-      CONTROL_CENTER_CONNECT_CLUSTER: http://kafka-connect:8083
-      CONTROL_CENTER_REPLICATION_FACTOR: 1
-      PORT: 9021
-    extra_hosts:
-      - "host.docker.internal:172.17.0.1"
-    ports:
-      - 9021:9021
 
   kafka-connect:
     image: confluentinc/cp-kafka-connect-base:6.0.0
@@ -68,6 +54,7 @@ services:
       - -c
       - |
         echo "Installing Connector"
+        confluent-hub install --no-prompt confluentinc/kafka-connect-jdbc:latest
         confluent-hub install --no-prompt confluentinc/kafka-connect-rabbitmq:latest
         #
         echo "Launching Kafka Connect worker"
@@ -102,3 +89,63 @@ services:
       - 8083:8083
     volumes:
       - .docker/kafka-connect/jars:/etc/kafka-connect/jars
+
+  schema-registry:
+    image: confluentinc/cp-schema-registry:latest
+    container_name: comm-infra-schema-registry
+    depends_on:
+      - zookeeper
+      - kafka
+    environment:
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: PLAINTEXT://kafka:9092
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
+      SCHEMA_REGISTRY_DEBUG: "true"
+    hostname: schema-registry
+    ports:
+      - 8081:8081
+
+  ksqldb:
+    image: confluentinc/cp-ksqldb-server:latest
+    container_name: comm-infra-ksqldb
+    depends_on:
+      - zookeeper
+      - kafka
+    environment:
+      KSQL_BOOTSTRAP_SERVERS: PLAINTEXT://kafka:9092
+      KSQL_LISTENERS: http://0.0.0.0:8088/
+      KSQL_KSQL_SCHEMA_REGISTRY_URL: http://schema-registry:8081/
+      KSQL_KSQL_SERVICE_ID: comm-infra-ksqldb
+    ports:
+      - 8088:8088
+
+  control-center:
+    image: confluentinc/cp-enterprise-control-center:6.0.1
+    container_name: comm-infra-control-center
+    depends_on:
+      - kafka
+      - kafka-connect
+      - schema-registry
+    environment:
+      CONTROL_CENTER_BOOTSTRAP_SERVERS: "kafka:9092"
+      CONTROL_CENTER_CONNECT_CLUSTER: http://kafka-connect:8083
+      CONTROL_CENTER_KSQL_URL: http://ksqldb:8088
+      CONTROL_CENTER_SCHEMA_REGISTRY_URL: http://schema-registry:8081
+      CONTROL_CENTER_REPLICATION_FACTOR: 1
+      PORT: 9021
+    extra_hosts:
+      - "host.docker.internal:172.17.0.1"
+    ports:
+      - 9021:9021
+
+  postgres:
+    image: postgres:13
+    container_name: comm-infra-postgres
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: comm_infra
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - 5432:5432
+    volumes:
+      - ./.docker/postgres:/var/lib/postgresql/data

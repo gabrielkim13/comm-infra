@@ -614,8 +614,12 @@ dist
 !.docker/kafka-connect/connectors
 !.docker/kafka-connect/connectors/**/*
 
+.docker/postgres/**/*
+!.docker/postgres/.gitkeep
+
 .docker/rabbitmq/**/*
 !.docker/rabbitmq/.gitkeep
+!.docker/rabbitmq/Dockerfile
 !.docker/rabbitmq/etc
 
 .docker/rabbitmq/etc/**/*

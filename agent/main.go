@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"math/rand"
 	"os"
@@ -13,8 +12,10 @@ import (
 )
 
 type PluginEvent struct {
-	Value     int   `json:"value"`
-	Timestamp int64 `json:"timestamp"`
+	ClientId  string `json:"client_id"`
+	Code      string `json:"code"`
+	Value     int    `json:"value"`
+	Timestamp int64  `json:"timestamp"`
 }
 
 type PublishPluginEventsOptions struct {
@@ -78,7 +79,7 @@ func main() {
 
 	waitForCtrlC()
 
-	fmt.Printf("Exiting...")
+	fmt.Printf("\nExiting...")
 }
 
 func createMqttClient(host string, port uint16) mqtt.Client {
@@ -111,10 +112,12 @@ func publishPluginEvents(client mqtt.Client, options *PublishPluginEventsOptions
 		value := getRandomIntRange(options.Min, options.Max)
 
 		event := PluginEvent{
+			ClientId:  ClientId,
+			Code:      options.Code,
 			Value:     value,
 			Timestamp: time.Now().UnixMilli(),
 		}
-		payload, _ := json.Marshal(event)
+		payload := fmt.Sprintf("%s,%s,%d,%d", event.ClientId, event.Code, event.Value, event.Timestamp)
 
 		token := client.Publish(topic, 1, false, payload)
 		token.Wait()
