@@ -119,6 +119,8 @@ func publishPluginEvents(client mqtt.Client, options *PublishPluginEventsOptions
 		token := client.Publish(topic, 1, false, payload)
 		token.Wait()
 
+		fmt.Printf("Published event %v\n", event)
+
 		time.Sleep(options.Interval)
 	}
 }
