@@ -606,6 +606,12 @@ dist
 
 # End of https://www.toptal.com/developers/gitignore/api/git,visualstudiocode,jetbrains,node,yarn,dotnetcore,aspnetcore,go
 
+.docker/kafka/**/*
+!.docker/kafka/.gitkeep
+
+.docker/kafka-connect/**/*
+!.docker/kafka-connect/.gitkeep
+
 .docker/rabbitmq/**/*
 !.docker/rabbitmq/.gitkeep
 !.docker/rabbitmq/etc
@@ -613,3 +619,6 @@ dist
 .docker/rabbitmq/etc/**/*
 !.docker/rabbitmq/etc/rabbitmq.conf
 !.docker/rabbitmq/etc/enabled_plugins
+
+.docker/zookeeper/**/*
+!.docker/zookeeper/.gitkeep
