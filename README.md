@@ -25,17 +25,16 @@ PoC de infraestrutura de comunicação utilizando RabbitMQ e Kafka.
 3. Adicione um *binding* desta fila à *exchange* `amq.topic`, utilizando como *routing key* o valor
    `plugins.*`
 
-### Executando o agente MQTT
+### Executando o *producer* MQTT
 
-1. Execute o agente MQTT executando:
+1. Execute o *producer* MQTT com o comando:
 
     ```bash
-    cd agent
-    go run .
+    go run producer/producer.go
     ```
 
-    A partir deste momento, os eventos publicados pelo agente deverão constar na fila `plugins` do
-    RabbitMQ, criada na etapa anterior.
+    A partir deste momento, os eventos publicados pelo *producer* deverão constar na fila `plugins`
+    do RabbitMQ, criada na etapa anterior.
 
 ### Integrando o RabbitMQ ao Kafka
 
@@ -170,13 +169,31 @@ PoC de infraestrutura de comunicação utilizando RabbitMQ e Kafka.
     ORDER BY 1,2
     ```
 
+### Consumindo eventos do tópico `plugins_json`
+
+No momento, a biblioteca do *client* Kafka do Go não suporta a execução no Windows, sendo
+necessário executar o comando abaixo de dentro do WSL, ou de um container do Docker.
+
+Além disso, pode ser necessária a adição da linha abaixo ao arquivo `/etc/hosts`:
+
+```
+127.0.0.1   kafka
+```
+
+1. Execute o *consumer* do Kafka com o comando:
+
+    ```bash
+    go run consumer/consumer.go -t plugins_json -g consumer-group-1
+    ```
+
 ## Versionamento
 
 > Em construção...
 
 ## Tecnologias utilizadas
 
-Consulte a documentação das tecnologias abaixo para obter proficiência no desenvolvimento e manutenção deste projeto:
+Consulte a documentação das tecnologias abaixo para obter proficiência no desenvolvimento e
+manutenção deste projeto:
 
 - [MQTT](https://mqtt.org/)
 - [RabbitMQ](https://www.rabbitmq.com/)
