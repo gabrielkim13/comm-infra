@@ -146,6 +146,30 @@ PoC de infraestrutura de comunicação utilizando RabbitMQ e Kafka.
 
     A partir deste momento, os eventos publicados pelo agente deverão ser automaticamente inseridos no banco de dados.
 
+### Criando dashboard de monitoramento com o Grafana
+
+1. Acesse a URL do Grafana: http://localhost:3000
+
+    - As credenciais padrão são `admin`, para o usuário e a senha
+
+2. Em **Configuration** >> **Data sources**, adicione o banco de dados Postgres como a fonte padrão de dados
+
+    - No campo *Host*, utilize a URL: `postgres:5432`
+
+3. Crie um novo *dashboard* e, em um novo *painel*, utilize a query abaixo para criar um gráfico de série temporal:
+
+    ```sql
+    SELECT
+      created_at AS "time",
+      code AS metric,
+      value
+    FROM plugins_avro
+    WHERE
+      $__timeFilter(created_at) AND
+      code IN ('0001', '0002')
+    ORDER BY 1,2
+    ```
+
 ## Versionamento
 
 > Em construção...
@@ -157,3 +181,5 @@ Consulte a documentação das tecnologias abaixo para obter proficiência no des
 - [MQTT](https://mqtt.org/)
 - [RabbitMQ](https://www.rabbitmq.com/)
 - [Kafka](https://kafka.apache.org/)
+- [Grafana](https://grafana.com/)
+- [PostgreSQL](https://www.postgresql.org/)

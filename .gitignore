@@ -606,6 +606,9 @@ dist
 
 # End of https://www.toptal.com/developers/gitignore/api/git,visualstudiocode,jetbrains,node,yarn,dotnetcore,aspnetcore,go
 
+.docker/grafana/**/*
+!.docker/grafana/.gitkeep
+
 .docker/kafka/**/*
 !.docker/kafka/.gitkeep
 

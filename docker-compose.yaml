@@ -149,3 +149,13 @@ services:
       - 5432:5432
     volumes:
       - ./.docker/postgres:/var/lib/postgresql/data
+
+  grafana:
+    image: grafana/grafana-enterprise:latest
+    container_name: comm-infra-grafana
+    depends_on:
+      - postgres
+    ports:
+      - 3000:3000
+    volumes:
+      - ./.docker/grafana:/var/lib/grafana
