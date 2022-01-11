@@ -2,6 +2,10 @@
 
 PoC de infraestrutura de comunicação utilizando RabbitMQ e Kafka.
 
+<p align="center">
+  <img alt="comm-infra" src=".github/images/comm-infra.jpg" />
+</p>
+
 ## Pré-requisitos
 
 - [Git](https://git-scm.com/)
@@ -11,8 +15,6 @@ PoC de infraestrutura de comunicação utilizando RabbitMQ e Kafka.
 - [Go](https://go.dev/)
 
 ## Instruções
-
-> Em construção...
 
 ### Criando fila de mensagens no RabbitMQ
 
@@ -188,7 +190,7 @@ Além disso, pode ser necessária a adição da linha abaixo ao arquivo `/etc/ho
 
 ## Versionamento
 
-> Em construção...
+- **1.0.0:** Versão inicial
 
 ## Tecnologias utilizadas
 
